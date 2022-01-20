@@ -1,7 +1,7 @@
 # GPS anomaly detection
 
 ```bash
-pip install gps_anomaly
+pip install gps-anomaly
 ``` 
 
 ### Usage
@@ -9,7 +9,7 @@ pip install gps_anomaly
 from gps_anomaly.detector import Anomaly
 
 anomaly = Anomaly()
-print(anomaly.anomaly_detector([{
+points = [{
         "Latitude": 22.32689719997222,
         "Longitude": 11.49237269997222,
         "CaptureTime": "2021_11_18_15_22_52_000",
@@ -49,7 +49,8 @@ print(anomaly.anomaly_detector([{
             "id": "8323ff0a01fe49d1b55e610279f62828"
         }
     }
-]))
+]
+print(anomaly.anomaly_detector(frames=points))
 ```
 
 ### Output
