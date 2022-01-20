@@ -13,7 +13,7 @@ class Anomaly:
         :return:
         """
         removed_anomaly_frames = None
-        removed_anomaly_frames = None
+        anomaly_points = None
         try:
             removed_anomaly_frames, failed_imgs, anomaly_points = extract_result(frames)
         except Exception as e:

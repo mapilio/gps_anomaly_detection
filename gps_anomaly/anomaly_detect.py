@@ -153,7 +153,7 @@ def update_info(info,filenames):
 def extract_result(decs):
     extracted,info,anomalies = groupy_to_result(decs)
     filenames_list = create_list_filename(anomalies)
-    info = update_info(info,anomalies)
+    info = update_info(info,filenames_list)
     extracted = create_json(extracted,info)
     anomaly_points = create_json(anomalies,info)
     return extracted , filenames_list ,anomaly_points
