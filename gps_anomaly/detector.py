@@ -14,10 +14,11 @@ class Anomaly:
         """
         removed_anomaly_frames = None
         try:
-            removed_anomaly_frames = extract_result(frames)
+            removed_anomaly_frames, failed_imgs = extract_result(frames)
         except Exception as e:
 
             print("exc_type : ", type(e).__name__)
             print("exc_message :", str(e))
 
-        return removed_anomaly_frames
+        return removed_anomaly_frames, failed_imgs
+
