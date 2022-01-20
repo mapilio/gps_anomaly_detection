@@ -13,12 +13,13 @@ class Anomaly:
         :return:
         """
         removed_anomaly_frames = None
+        removed_anomaly_frames = None
         try:
-            removed_anomaly_frames, failed_imgs = extract_result(frames)
+            removed_anomaly_frames, failed_imgs, anomaly_points = extract_result(frames)
         except Exception as e:
 
             print("exc_type : ", type(e).__name__)
             print("exc_message :", str(e))
 
-        return removed_anomaly_frames, failed_imgs
+        return removed_anomaly_frames, failed_imgs, anomaly_points
 

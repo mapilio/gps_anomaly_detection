@@ -12,17 +12,14 @@ class AnomalyConfig:
     down_percent: float = DOWN_RATIO
     up_percent: float = UP_RATIO
 
-
 def key_func(k):
     return k['SequenceUUID']
-
 
 def pairwise(iterable):
     """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
     a, b = itertools.tee(iterable)
     next(b, None)
     return list(zip(a, b))
-
 
 def ecef_from_lla(lat, lon, alt):
     """
@@ -57,16 +54,20 @@ def gps_distance(latlon_1, latlon_2):
     return dis
 
 
-def list_dist(zipped, seq):
+def list_dist(zipped, seq, pair_head):
     """
     :param zipped: format (Latitude,Latitude,Longitude,Longitude)
     :param seq: squence
     :return: data with anomalies removed
     """
     extracted_seq = []
-    anomaly_points = []
+    anomaly_points= []
     for i in range(len(zipped)):
-        if not (gps_distance(zipped[i][0], zipped[i][1])) > 50:
+        upper_angle = max(pair_head[i][0], pair_head[i][1])
+        lower_angle = min(pair_head[i][0], pair_head[i][1])
+        range_angle = range(int(lower_angle), int(upper_angle))
+        range_angle = [a % 360 if a >= 360 else a for a in range_angle]
+        if not (gps_distance(zipped[i][0], zipped[i][1])) > 50 and len(range_angle) < 10:
             extracted_seq.append(next(dic for dic in seq if dic['Latitude'] == zipped[i][0][1]))
         else:
             anomaly_points.append(next(dic for dic in seq))
@@ -80,7 +81,7 @@ def list_dist(zipped, seq):
     else:
         extracted = extracted_seq
         anomalies = anomaly_points
-    return extracted, anomalies
+    return extracted,anomalies
 
 
 def groupy_to_result(descs):
@@ -98,19 +99,22 @@ def groupy_to_result(descs):
     for _, val in groupby(descs, key_func):
         sequances.append(list(val))
     disrubution = []
-    filenames = []
+    anomalies = []
     for sequance in sequances:
         latitude = []
         longitude = []
+        heading = []
         for seq in sequance:
             latitude.append(seq['Latitude'])
             longitude.append(seq['Longitude'])
+            heading.append(seq['Heading'])
         pair_lat = pairwise(latitude)
         pair_lon = pairwise(longitude)
+        pair_head = pairwise(heading)
         zipped = list(zip(pair_lat, pair_lon))
-        disrubution.append(list_dist(zipped, sequance)[0])
-        filenames.append(list_dist(zipped, sequance)[1])
-    return disrubution, information, filenames
+        disrubution.append(list_dist(zipped, sequance,pair_head)[0])
+        anomalies.append(list_dist(zipped, sequance,pair_head)[1])
+    return disrubution, information,anomalies
 
 
 def create_json(distrubution, info):
@@ -128,23 +132,28 @@ def create_json(distrubution, info):
     united_sequances.append(info)
     return united_sequances
 
-
-def filename_list(distrubution):
+def create_list_filename(distrubution):
     """
     appends result to one list
     :param distrubution:
     :return:
     """
-    united_sequances = []
+    file_list = []
     for sequances in distrubution:
         for seq in sequances:
             if type(seq) == dict:
-                united_sequances.append(os.path.join(seq['filename']))
-    return united_sequances
+                file_list.append(os.path.join(seq['filename']))
+    return file_list
 
+def update_info(info,filenames):
+    info['Information']['processed_images'] = info['Information']['processed_images']-len(filenames)
+    info['Information']['failed_images'] = info['Information']['failed_images'] + len(filenames)
+    return info
 
 def extract_result(decs):
-    extracted, info, filenames = groupy_to_result(decs)
-    extracted = create_json(extracted, info)
-    filenames = filename_list(filenames)
-    return extracted, filenames
+    extracted,info,anomalies = groupy_to_result(decs)
+    filenames_list = create_list_filename(anomalies)
+    info = update_info(info,anomalies)
+    extracted = create_json(extracted,info)
+    anomaly_points = create_json(anomalies,info)
+    return extracted , filenames_list ,anomaly_points
