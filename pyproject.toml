@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "gps_anomaly"
-version = "0.1.1"
+version = "0.1.5"
 description = "Detecet and Remove GPS anomalies points"
 readme = "README.md"
 authors = ["mcv_ <murat@visiosoft.com.tr>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
