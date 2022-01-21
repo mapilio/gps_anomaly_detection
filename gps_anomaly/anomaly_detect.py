@@ -2,7 +2,6 @@ import math
 import itertools
 import os.path
 from itertools import groupby
-import json
 
 DOWN_RATIO = 0.3
 UP_RATIO = 0.7
@@ -62,12 +61,13 @@ def list_dist(zipped, seq, pair_head):
     """
     extracted_seq = []
     anomaly_points= []
+
     for i in range(len(zipped)):
         upper_angle = max(pair_head[i][0], pair_head[i][1])
         lower_angle = min(pair_head[i][0], pair_head[i][1])
         range_angle = range(int(lower_angle), int(upper_angle))
         range_angle = [a % 360 if a >= 360 else a for a in range_angle]
-        if not (gps_distance(zipped[i][0], zipped[i][1])) > 50 and len(range_angle) < 10:
+        if gps_distance(zipped[i][0], zipped[i][1]) < 50 and len(range_angle) < 10 and zipped[i][1][1]>0:
             extracted_seq.append(next(dic for dic in seq if dic['Latitude'] == zipped[i][0][1]))
         else:
             anomaly_points.append(next(dic for dic in seq))
@@ -75,9 +75,9 @@ def list_dist(zipped, seq, pair_head):
     if ratio_seq < AnomalyConfig.up_percent:
         extracted = []
         anomalies = seq
-    elif ratio_seq > AnomalyConfig.down_percent:
-        extracted = seq
-        anomalies = []
+    # elif ratio_seq > AnomalyConfig.down_percent:
+    #     extracted = seq
+    #     anomalies = []
     else:
         extracted = extracted_seq
         anomalies = anomaly_points
