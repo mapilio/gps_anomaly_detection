@@ -52,7 +52,6 @@ def gps_distance(latlon_1, latlon_2):
     dis = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
     return dis
 
-
 def list_dist(zipped, seq, pair_head):
     """
     :param zipped: format (Latitude,Latitude,Longitude,Longitude)
@@ -67,8 +66,12 @@ def list_dist(zipped, seq, pair_head):
         lower_angle = min(pair_head[i][0], pair_head[i][1])
         range_angle = range(int(lower_angle), int(upper_angle))
         range_angle = [a % 360 if a >= 360 else a for a in range_angle]
-        if gps_distance(zipped[i][0], zipped[i][1]) < 50 and len(range_angle) < 10 and zipped[i][1][1]>0:
-            extracted_seq.append(next(dic for dic in seq if dic['Latitude'] == zipped[i][0][1]))
+        if gps_distance(zipped[i][0], zipped[i][1]) < 50 and len(range_angle) < 10:
+            dict=(next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
+            if dict['Altitude'] > 0:
+                extracted_seq.append(dict)
+            else:
+                anomaly_points.append(dict)
         else:
             anomaly_points.append(next(dic for dic in seq))
     ratio_seq = len(extracted_seq) / len(seq)
