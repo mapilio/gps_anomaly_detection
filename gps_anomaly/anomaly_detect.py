@@ -1,4 +1,3 @@
-import json
 from detect_functions import Sequance,Info
 
 def extract_result(decs):
