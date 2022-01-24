@@ -1,4 +1,4 @@
-from gps_anomaly.anomaly_detect import extract_result
+from gps_anomaly.detect_functions import extract_result
 
 
 class Anomaly:

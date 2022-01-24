@@ -1,7 +1,7 @@
 from typing import List, Any
 import itertools
 from itertools import groupby
-from config_heading import Angle
+from config_heading import Heading
 from config_distance import Distance
 import os
 
@@ -25,7 +25,7 @@ class AnomalyConfig:
     up_percent: float = UP_RATIO
 
 
-class Sequance:
+class GpsCalculator:
 
     extracted_seq: List[Any]
     anomaly_points: List[Any]
@@ -50,17 +50,21 @@ class Sequance:
         extracted_seq = []
         anomaly_points = []
         for i in range(len(zipped)):
-            ang = Angle()
+            ang = Heading()
             distance = Distance()
             rang = ang.rang(pair_head[i])
             if distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and rang < ang.header_limit:
                 dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
                 if dicton['Altitude'] > 0:
+                    dicton['process'] = 1
                     extracted_seq.append(dicton)
                 else:
+                    dicton['process'] = 0
                     anomaly_points.append(dicton)
             else:
-                anomaly_points.append(next(dic for dic in seq))
+                out_range = next(dic for dic in seq)
+                out_range['process'] = 0
+                anomaly_points.append(out_range)
         ratio_seq = len(extracted_seq) / len(seq)
 
         if ratio_seq < AnomalyConfig.down_percent:
@@ -97,11 +101,11 @@ class Sequance:
         return self.disrubution, self.information, self.anomalies
 
 
-class Info:
+class FileInfo:
 
     def create_list_filename(self, distrubution):
         """
-        appends result to one list
+        appends result to one list that filenames of detected anomalies points
         :param distrubution:
         :return:
         """
@@ -113,6 +117,7 @@ class Info:
         return file_list
 
     def update_info(self, info, file_names):
+
         info['Information']['processed_images'] = info['Information']['processed_images'] - len(file_names)
         info['Information']['failed_images'] = info['Information']['failed_images'] + len(file_names)
         return info
@@ -131,3 +136,13 @@ class Info:
                     united_sequances.append(seq)
         united_sequances.append(info)
         return united_sequances
+
+def extract_result(decs):
+    data_all = GpsCalculator(decs)
+    info = FileInfo()
+    extracted, information, anomaly = data_all.groupy_to_result()
+    filenames_list = info.create_list_filename(anomaly)
+    information = info.update_info(information, filenames_list)
+    extracted = info.create_json(extracted, information)
+    anomaly_points = info.create_json(anomaly, information)
+    return extracted, filenames_list, anomaly_points
