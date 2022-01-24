@@ -1,8 +1,8 @@
 from typing import List, Any
 import itertools
 from itertools import groupby
-from config_heading import Heading
-from config_distance import Distance
+from .config_heading import Heading
+from .config_distance import Distance
 import os
 
 DOWN_RATIO = 0.3
