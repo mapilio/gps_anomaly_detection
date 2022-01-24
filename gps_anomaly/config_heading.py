@@ -1,8 +1,5 @@
-class Heading:
-    """
-        header_limit : define the distance limit for detecting anomaly
-    """
-    header_limit = 30
+class Angle:
+    header_limit = 10
 
     def __init__(self):
         self.upper_angle = int

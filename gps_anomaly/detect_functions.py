@@ -1,8 +1,9 @@
 from typing import List, Any
 import itertools
 from itertools import groupby
-from .config_heading import Heading
+from .config_heading import Angle
 from .config_distance import Distance
+from .config_info_anomalies import Anomaly_index
 import os
 
 DOWN_RATIO = 0.3
@@ -25,7 +26,7 @@ class AnomalyConfig:
     up_percent: float = UP_RATIO
 
 
-class GpsCalculator:
+class Sequance:
 
     extracted_seq: List[Any]
     anomaly_points: List[Any]
@@ -50,33 +51,40 @@ class GpsCalculator:
         extracted_seq = []
         anomaly_points = []
         for i in range(len(zipped)):
-            ang = Heading()
+            ang = Angle()
             distance = Distance()
             rang = ang.rang(pair_head[i])
             if distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and rang < ang.header_limit:
                 dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
                 if dicton['Altitude'] > 0:
-                    dicton['process'] = 1
                     extracted_seq.append(dicton)
                 else:
-                    dicton['process'] = 0
                     anomaly_points.append(dicton)
             else:
                 out_range = next(dic for dic in seq)
-                out_range['process'] = 0
                 anomaly_points.append(out_range)
         ratio_seq = len(extracted_seq) / len(seq)
 
         if ratio_seq < AnomalyConfig.down_percent:
             extracted = []
             anomalies = seq
+            uuud = (anomalies[0]['SequenceUUID'])
+
         elif ratio_seq > AnomalyConfig.up_percent:
             extracted = seq
             anomalies = []
+            uuud = []
+
         else:
             extracted = extracted_seq
             anomalies = anomaly_points
-        return extracted, anomalies
+            uuud = []
+
+        ai = Anomaly_index()
+        extracted = ai.info_anomalies(extracted,False)
+        anomalies = ai.info_anomalies(anomalies,True)
+
+        return extracted, anomalies, uuud
 
     def groupy_to_result(self):
         """
@@ -85,7 +93,7 @@ class GpsCalculator:
         - using anomaly/sequence ratio, get the final result sequences extracted anomalies
         :return:
         """
-
+        uud = []
         for sequan in self.sequances:
             latitude = []
             longitude = []
@@ -98,14 +106,15 @@ class GpsCalculator:
             zipped = list(zip(pair_lat, pair_lon))
             self.disrubution.append(self.list_dist(zipped, sequan, pair_head)[0])
             self.anomalies.append(self.list_dist(zipped, sequan, pair_head)[1])
-        return self.disrubution, self.information, self.anomalies
+            uud.append(self.list_dist(zipped,sequan, pair_head)[2])
+        return self.disrubution, self.information, self.anomalies, uud
 
 
-class FileInfo:
+class Info:
 
     def create_list_filename(self, distrubution):
         """
-        appends result to one list that filenames of detected anomalies points
+        appends result to one list
         :param distrubution:
         :return:
         """
@@ -116,10 +125,11 @@ class FileInfo:
                     file_list.append(os.path.join(seq['filename']))
         return file_list
 
-    def update_info(self, info, file_names):
-
+    def update_info(self, info, file_names,uud):
         info['Information']['processed_images'] = info['Information']['processed_images'] - len(file_names)
         info['Information']['failed_images'] = info['Information']['failed_images'] + len(file_names)
+        uud = [lis for lis in uud if lis != []]
+        info['Information']['anomaly_sequances:'] = uud
         return info
 
     def create_json(self, distrubution, info):
@@ -138,11 +148,11 @@ class FileInfo:
         return united_sequances
 
 def extract_result(decs):
-    data_all = GpsCalculator(decs)
-    info = FileInfo()
-    extracted, information, anomaly = data_all.groupy_to_result()
+    data_all = Sequance(decs)
+    info = Info()
+    extracted, information, anomaly,uud = data_all.groupy_to_result()
     filenames_list = info.create_list_filename(anomaly)
-    information = info.update_info(information, filenames_list)
+    information = info.update_info(information, filenames_list,uud)
     extracted = info.create_json(extracted, information)
     anomaly_points = info.create_json(anomaly, information)
     return extracted, filenames_list, anomaly_points

@@ -22,4 +22,3 @@ class Anomaly:
             print("exc_message :", str(e))
 
         return removed_anomaly_frames, failed_imgs, anomaly_points
-

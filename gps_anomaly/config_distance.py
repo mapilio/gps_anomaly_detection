@@ -2,9 +2,6 @@ import math
 
 
 class Distance:
-    """
-    distance_limit : define the distance limit for detecting anomaly
-    """
     distance_limit = 50
 
     def __init__(self):
@@ -33,7 +30,7 @@ class Distance:
         """
         :param latlon_1: 2 Latitude points
         :param latlon_2: 2 Longitude points
-        :return: the distance between two points
+        :return:
         """
         x1, y1, z1 = self.ecef_from_lla(latlon_1[0], latlon_2[0], 0.0)
         x2, y2, z2 = self.ecef_from_lla(latlon_1[1], latlon_2[1], 0.0)
