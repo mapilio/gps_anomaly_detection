@@ -37,6 +37,10 @@ class AnomalyConfig:
 
 
 class Sequence:
+    """
+    sequence based anomaly
+    detects and returns anomaly points
+    """
 
     extracted_seq: List[Any]
     anomaly_points: List[Any]
@@ -118,6 +122,10 @@ class Sequence:
 
 
 class Info:
+    """
+    Notices failure sequence UUID,
+    anomaly points' image names.
+    """
 
     def create_list_filename(self, distrubution):
         """
@@ -155,6 +163,12 @@ class Info:
         return united_sequences
 
 def mark_points(decs):
+
+    """
+        - Group the sequences, remove that has one element sequences.
+        - For each series, calculate distance of all points in the sequence.
+        - using length anomaly/sequence ratio, get the final result sequences extracted anomalies
+    """
     data_all = Sequence(decs)
     info = Info()
     extracted, information, anomaly,uud = data_all.groupy_to_result()
