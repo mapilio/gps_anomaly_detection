@@ -2,6 +2,12 @@ import math
 
 
 class Distance:
+    """
+    the distance between two GPS points dec calculated
+    using latitude and longitude information.
+    the distances remaining above the "distance_limit"
+    parameter will be marked as the anomaly point.
+    """
     distance_limit = 50
 
     def __init__(self):

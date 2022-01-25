@@ -1,4 +1,4 @@
-from gps_anomaly.detect_functions import extract_result
+from gps_anomaly.detect_functions import mark_points
 
 
 class Anomaly:
@@ -15,7 +15,7 @@ class Anomaly:
         removed_anomaly_frames = None
         anomaly_points = None
         try:
-            removed_anomaly_frames, failed_imgs, anomaly_points = extract_result(frames)
+            removed_anomaly_frames, failed_imgs, anomaly_points = mark_points(frames)
         except Exception as e:
 
             print("exc_type : ", type(e).__name__)

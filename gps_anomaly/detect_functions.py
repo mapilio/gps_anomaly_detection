@@ -12,8 +12,8 @@ UP_RATIO = 0.9
 
 def first_point(anomaly_points,extracted_seq,seq):
     """
-    First points of sequences has defined such as anomaly or
-    not anomaly with comparing second point.
+    First points of sequences has marked as anomaly or
+    not anomaly, with comparing second point.
     """
     if seq[1] in extracted_seq:
         extracted_seq.append(seq[0])
@@ -46,8 +46,6 @@ class Sequence:
         descs = list(descs)[:-1]
         self.descs = [desc for desc in descs if ("error" not in desc) and ("Heading" in desc)]
         self.sequences = []
-        for _, val in groupby(self.descs, key_func):
-            self.sequences.append(list(val))
         self.distribution = []
         self.anomalies = []
 
@@ -82,11 +80,6 @@ class Sequence:
             anomalies = seq
             uuud = (anomalies[0]['SequenceUUID'])
 
-        elif ratio_seq > AnomalyConfig.up_percent:
-            extracted = seq
-            anomalies = []
-            uuud = []
-
         else:
             extracted = extracted_seq
             anomalies = anomaly_points
@@ -106,6 +99,8 @@ class Sequence:
         :return:
         """
         uud = []
+        for _, val in groupby(self.descs, key_func):
+            self.sequences.append(list(val))
         for sequen in self.sequences:
             latitude = []
             longitude = []
@@ -141,7 +136,7 @@ class Info:
         info['Information']['processed_images'] = info['Information']['processed_images'] - len(file_names)
         info['Information']['failed_images'] = info['Information']['failed_images'] + len(file_names)
         uud = [lis for lis in uud if lis != []]
-        info['Information']['anomaly_sequences:'] = uud
+        info['Information']['anomaly_sequences'] = uud
         return info
 
     def create_json(self, distrubution, info):
@@ -159,7 +154,7 @@ class Info:
         united_sequences.append(info)
         return united_sequences
 
-def extract_result(decs):
+def mark_points(decs):
     data_all = Sequence(decs)
     info = Info()
     extracted, information, anomaly,uud = data_all.groupy_to_result()

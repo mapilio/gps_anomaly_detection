@@ -1,4 +1,10 @@
 class Angle:
+    """
+    The length of the "heading" values between two
+    points gives the difference between the "heading".
+    The values that remain above the parameter that,
+    "header_limit" will be marked as an anomaly.
+    """
     header_limit = 10
 
     def __init__(self):
