@@ -17,6 +17,7 @@ def first_point(anomaly_points,extracted_seq,seq):
         anomaly_points.append(seq[0])
     return extracted_seq,anomaly_points
 
+
 def pairwise(iterable):
     """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
     a, b = itertools.tee(iterable)
