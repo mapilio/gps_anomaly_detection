@@ -9,6 +9,7 @@ import os
 DOWN_RATIO = 0.3
 UP_RATIO = 0.9
 
+
 def first_point(anomaly_points,extracted_seq,seq):
     """
     First points of sequences has marked as anomaly or
