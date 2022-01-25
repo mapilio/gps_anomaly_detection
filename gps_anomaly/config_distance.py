@@ -32,7 +32,7 @@ class Distance:
         :param latlon_2: 2 Longitude points
         :return:
         """
-        x1, y1, z1 = self.ecef_from_lla(latlon_1[0], latlon_2[0], 0.0)
-        x2, y2, z2 = self.ecef_from_lla(latlon_1[1], latlon_2[1], 0.0)
+        x1, y1, z1 = self.ecef_from_lla(float(latlon_1[0]), float(latlon_2[0]), 0.0)
+        x2, y2, z2 = self.ecef_from_lla(float(latlon_1[1]), float(latlon_2[1]), 0.0)
         dis = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
         return dis
