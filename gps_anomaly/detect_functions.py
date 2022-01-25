@@ -6,7 +6,6 @@ from .config_distance import Distance
 from .config_info_anomalies import Anomaly_index
 import os
 
-
 DOWN_RATIO = 0.3
 UP_RATIO = 0.9
 
@@ -15,7 +14,7 @@ def first_point(anomaly_points,extracted_seq,seq):
     First points of sequences has marked as anomaly or
     not anomaly, with comparing second point.
     """
-    if seq[1] in extracted_seq:
+    if len(extracted_seq)>1 and seq[1] in extracted_seq:
         extracted_seq.append(seq[0])
     else:
         anomaly_points.append(seq[0])
@@ -62,20 +61,24 @@ class Sequence:
         """
         extracted_seq = []
         anomaly_points = []
-        for i in range(len(zipped)):
-            ang = Angle()
-            distance = Distance()
-            rang = ang.rang(pair_head[i])
-            if distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and rang < ang.header_limit:
+        if len(seq) < 10:
+            anomaly_points = seq
+        else:
+            for i in range(len(zipped)):
+                ang = Angle()
+                distance = Distance()
+                rang = ang.rang(pair_head[i])
+                if distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and rang < ang.header_limit:
 
-                dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
-                if dicton['Altitude'] > 0:
-                    extracted_seq.append(dicton)
+                    dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
+                    if dicton['Altitude'] > 0:
+                        extracted_seq.append(dicton)
+                    else:
+                        anomaly_points.append(dicton)
                 else:
-                    anomaly_points.append(dicton)
-            else:
-                out_range = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
-                anomaly_points.append(out_range)
+                    out_range = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
+                    anomaly_points.append(out_range)
+
         extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
         ratio_seq = len(extracted_seq) / (len(extracted_seq) + len(anomaly_points))
 
