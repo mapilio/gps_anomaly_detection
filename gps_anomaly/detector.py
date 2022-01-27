@@ -1,6 +1,4 @@
-from typing import Tuple, Optional, Any
-
-from gps_anomaly.anomaly_detect import extract_result
+from gps_anomaly.detect_functions import mark_points
 
 
 class Anomaly:
@@ -9,18 +7,11 @@ class Anomaly:
     """
 
     @staticmethod
-    def anomaly_detector(frames: list) -> Tuple[Optional[Any], Optional[Any], Optional[Any]]:
+    def anomaly_detector(frames):
         """
         :param frames:
         :return:
         """
-        removed_anomaly_frames, failed_imgs, anomaly_points = None, None, None
-        try:
-            removed_anomaly_frames, failed_imgs, anomaly_points = extract_result(frames)
-        except Exception as e:
-
-            print("exc_type : ", type(e).__name__)
-            print("exc_message :", str(e))
+        removed_anomaly_frames, failed_imgs, anomaly_points = mark_points(frames)
 
         return removed_anomaly_frames, failed_imgs, anomaly_points
-
