@@ -7,8 +7,7 @@ from .config_info_anomalies import Anomaly_index
 import os
 
 DOWN_RATIO = 0.3
-UP_RATIO = 0.9
-
+SEQUENCE_LIMIT = 10
 
 def first_point(anomaly_points,extracted_seq,seq):
     """
@@ -33,7 +32,7 @@ def key_func(k):
 
 class AnomalyConfig:
     down_percent: float = DOWN_RATIO
-    up_percent: float = UP_RATIO
+    sequence_limit: int = SEQUENCE_LIMIT
 
 
 class Sequence:
@@ -52,6 +51,7 @@ class Sequence:
         self.sequences = []
         self.distribution = []
         self.anomalies = []
+        self.withanomalies = []
 
     def list_dist(self, zipped, seq, pair_head):
         """
@@ -62,7 +62,7 @@ class Sequence:
         """
         extracted_seq = []
         anomaly_points = []
-        if len(seq) < 10:
+        if len(seq) < AnomalyConfig.sequence_limit:
             anomaly_points = seq
         else:
             for i in range(len(zipped)):
@@ -80,7 +80,7 @@ class Sequence:
                     out_range = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
                     anomaly_points.append(out_range)
 
-        extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
+        # extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
         ratio_seq = len(extracted_seq) / (len(extracted_seq) + len(anomaly_points))
 
         if ratio_seq < AnomalyConfig.down_percent:
@@ -96,8 +96,9 @@ class Sequence:
         ai = Anomaly_index()
         extracted = ai.info_anomalies(extracted,False)
         anomalies = ai.info_anomalies(anomalies,True)
+        withanomaly = extracted + anomalies
 
-        return extracted, anomalies, uuud
+        return extracted, anomalies, uuud, withanomaly
 
     def groupy_to_result(self):
         """
@@ -119,10 +120,13 @@ class Sequence:
                 heading.append(seq['Heading'])
             pair_lat, pair_lon, pair_head = pairwise(latitude), pairwise(longitude), pairwise(heading)
             zipped = list(zip(pair_lat, pair_lon))
-            self.distribution.append(self.list_dist(zipped, sequen, pair_head)[0])
-            self.anomalies.append(self.list_dist(zipped, sequen, pair_head)[1])
-            uud.append(self.list_dist(zipped,sequen, pair_head)[2])
-        return self.distribution, self.information, self.anomalies, uud
+            extracted, anomalies, uuud, withanomaly = self.list_dist(zipped, sequen, pair_head)
+            self.distribution.append(extracted)
+            self.anomalies.append(anomalies)
+            uud.append(uuud)
+            self.withanomalies.append(withanomaly)
+
+        return self.distribution, self.information, self.anomalies, uud, self.withanomalies
 
 
 class Info:
@@ -175,9 +179,9 @@ def mark_points(decs):
     """
     data_all = Sequence(decs)
     info = Info()
-    extracted, information, anomaly,uud = data_all.groupy_to_result()
+    extracted, information, anomaly,uud, withanomaly = data_all.groupy_to_result()
     filenames_list = info.create_list_filename(anomaly)
     information = info.update_info(information, filenames_list,uud)
-    extracted = info.create_json(extracted, information)
+    extracted = info.create_json(withanomaly, information)
     anomaly_points = info.create_json(anomaly, information)
     return extracted, filenames_list, anomaly_points
