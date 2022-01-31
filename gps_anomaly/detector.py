@@ -12,6 +12,6 @@ class Anomaly:
         :param frames:
         :return:
         """
-        removed_anomaly_frames, failed_imgs = mark_points(frames)
+        removed_anomaly_frames, failed_imgs, _ = mark_points(frames)
 
-        return removed_anomaly_frames, failed_imgs
+        return removed_anomaly_frames, failed_imgs, _

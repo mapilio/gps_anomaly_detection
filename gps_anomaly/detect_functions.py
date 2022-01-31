@@ -194,4 +194,4 @@ def mark_points(decs):
     information = info.update_info(information, filenames_list, uud)
     extracted = info.create_json(withanomaly, information)
     anomaly_points = info.create_json(anomaly, information)
-    return extracted, filenames_list
+    return extracted, filenames_list, anomaly_points
