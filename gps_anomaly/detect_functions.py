@@ -80,7 +80,8 @@ class Sequence:
                         rang < ang.header_limit:
 
                     dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
-                    if dicton['Altitude'] < AnomalyConfig.altitude_upper:
+                    if dicton['Altitude'] < AnomalyConfig.altitude_upper and \
+                        dicton['Altitude'] > AnomalyConfig.altitude_lower:
                         extracted_seq.append(dicton)
                     else:
                         anomaly_points.append(dicton)
@@ -193,4 +194,4 @@ def mark_points(decs):
     information = info.update_info(information, filenames_list, uud)
     extracted = info.create_json(withanomaly, information)
     anomaly_points = info.create_json(anomaly, information)
-    return extracted, filenames_list, anomaly_points
+    return extracted, filenames_list
