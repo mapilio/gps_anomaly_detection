@@ -1,8 +1,6 @@
 from typing import List, Any
 from itertools import groupby
-from .config_heading import Angle
-from .config_distance import Distance
-from .config_info_anomalies import Anomaly_index
+from .config import Angle, Anomaly_index, Distance
 import itertools
 
 DOWN_RATIO = 0.2
