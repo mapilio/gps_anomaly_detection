@@ -78,7 +78,7 @@ class Sequence:
         # extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
         ratio_seq = len(extracted_seq) / (len(extracted_seq) + len(anomaly_points))
 
-        if ratio_seq < AnomalyConfig.down_percent :
+        if ratio_seq < AnomalyConfig.down_percent or len(extracted_seq) < 5:
             extracted = []
             anomalies = seq
             uuud = (anomalies[0]['SequenceUUID'])
