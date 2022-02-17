@@ -5,7 +5,7 @@ class Angle:
     The values that remain above the parameter that,
     "header_limit" will be marked as an anomaly.
     """
-    header_limit = 15
+    header_limit = 50
 
     def __init__(self):
         self.upper_angle = int
