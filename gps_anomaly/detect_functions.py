@@ -1,5 +1,6 @@
 from .one_sequence import Sequence
 import os
+import json
 
 
 def first_point(anomaly_points, extracted_seq, seq):
@@ -64,9 +65,9 @@ def mark_points(decs):
     """
     data_all = Sequence(decs)
     info = Info()
-    extracted, information, anomaly, uud, with_anomaly = data_all.groupy_to_result()
+    extracted, information, anomaly, uud, with_anomaly, order_seq = data_all.groupy_to_result()
     filenames_list = info.create_list_filename(anomaly)
     information = info.update_info(information, filenames_list, uud)
-    with_anomaly = info.create_json(with_anomaly, information)
+    order_seq = info.create_json(order_seq, information)
     anomaly_points = info.create_json(anomaly, information)
-    return with_anomaly, filenames_list, anomaly_points
+    return order_seq, filenames_list, anomaly_points

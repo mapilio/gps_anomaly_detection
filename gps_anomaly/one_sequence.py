@@ -47,6 +47,8 @@ class Sequence:
         self.anomalies = []
         self.withanomalies = []
         self.uud = []
+        self.order_seq = []
+
 
     def list_dist(self, zipped, seq, pair_head):
         """
@@ -57,29 +59,43 @@ class Sequence:
         """
         extracted_seq = []
         anomaly_points = []
+        ai = Anomaly_index()
+        ang = Angle()
+        distance = Distance()
         if len(seq) < AnomalyConfig.sequence_limit:
             anomaly_points = seq
         else:
             for i in range(len(zipped)):
-                ang = Angle()
-                distance = Distance()
                 rang = ang.rang(pair_head[i])
-                if distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and\
+                if distance.distance_low_limit < distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and\
                         rang < ang.header_limit:
                     dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
                     if AnomalyConfig.altitude_upper > dicton['Altitude']:
                         extracted_seq.append(dicton)
+                        seq[i] = ai.update_info(seq[i], detect=False)
+                        if i == len(zipped):
+                            seq[i] = ai.update_info(seq[i], detect=False)
+                            seq[i+1] = ai.update_info(seq[i+1], detect=False)
                     else:
                         anomaly_points.append(dicton)
+                        seq[i] = ai.update_info(seq[i], detect=True)
+                        if i == len(zipped):
+                            seq[i] = ai.update_info(seq[i], detect=True)
+                            seq[i+1] = ai.update_info(seq[i+1], detect=True)
                 else:
-                    out_range = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
-                    anomaly_points.append(out_range)
+                    dicton2 = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
+                    anomaly_points.append(dicton2)
+                    seq[i] = ai.update_info(seq[i], detect=True)
+                    if i == len(zipped):
+                        seq[i] = ai.update_info(seq[i], detect=True)
+                        seq[i + 1] = ai.update_info(seq[i + 1], detect=True)
 
         # extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
         ratio_seq = len(extracted_seq) / (len(extracted_seq) + len(anomaly_points))
 
         if ratio_seq < AnomalyConfig.down_percent or len(extracted_seq) < 5:
             extracted = []
+            seq = ai.info_anomalies(seq, True)
             anomalies = seq
             uuud = (anomalies[0]['SequenceUUID'])
 
@@ -88,15 +104,12 @@ class Sequence:
             anomalies = anomaly_points
             uuud = []
 
-        ai = Anomaly_index()
-
-
         extracted = ai.info_anomalies(extracted, False)
         anomalies = ai.info_anomalies(anomalies, True)
         withanomaly = extracted + anomalies
         # withanomaly.sort(key=lambda x: x['CaptureTime'])
 
-        return extracted, anomalies, uuud, withanomaly
+        return extracted, anomalies, uuud, withanomaly, seq
 
     def groupy_to_result(self):
         """
@@ -118,10 +131,12 @@ class Sequence:
                 heading.append(seq['Heading'])
             pair_lat, pair_lon, pair_head = pairwise(latitude), pairwise(longitude), pairwise(heading)
             zipped = list(zip(pair_lat, pair_lon))
-            extracted, anomalies, uuud, withanomaly = self.list_dist(zipped, sequen, pair_head)
+            extracted, anomalies, uuud, withanomaly, orderseq = self.list_dist(zipped, sequen, pair_head)
             self.distribution.append(extracted)
             self.anomalies.append(anomalies)
             self.uud.append(uuud)
             self.withanomalies.append(withanomaly)
+            self.order_seq.append(orderseq)
 
-        return self.distribution, self.information, self.anomalies, self.uud, self.withanomalies
+
+        return self.distribution, self.information, self.anomalies, self.uud, self.withanomalies, self.order_seq
