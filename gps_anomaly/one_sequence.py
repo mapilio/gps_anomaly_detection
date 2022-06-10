@@ -6,8 +6,8 @@ from .config.distance import Distance
 import itertools
 
 DOWN_RATIO = 0.2
-SEQUENCE_LIMIT = 5
-ALTITUDE_LOWER = 0 ##removed this condition, can be added on line71
+SEQUENCE_LIMIT = 10
+ALTITUDE_LOWER = 0    ##removed this condition, can be added on line71
 ALTITUDE_UPPER = 1500
 
 
@@ -137,6 +137,5 @@ class Sequence:
             self.uud.append(uuud)
             self.withanomalies.append(withanomaly)
             self.order_seq.append(orderseq)
-
 
         return self.distribution, self.information, self.anomalies, self.uud, self.withanomalies, self.order_seq

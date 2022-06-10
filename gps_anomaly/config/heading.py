@@ -16,4 +16,7 @@ class Angle:
         self.lower_angle = int(min(pair_head[0], pair_head[1]))
         range_angle = range(self.lower_angle, self.upper_angle)
         range_angle = [a % 360 if a >= 360 else a for a in range_angle]
-        return len(range_angle)
+        angle1 = len(range_angle)
+        angle2 = (360 - angle1) % 360
+        res_angle = min(angle2, angle1)
+        return res_angle
