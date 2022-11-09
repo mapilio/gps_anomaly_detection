@@ -134,6 +134,7 @@ class Sequence:
             extracted, anomalies, uuud, withanomaly, orderseq = self.list_dist(zipped, sequen, pair_head)
             self.distribution.append(extracted)
             self.anomalies.append(anomalies)
+
             self.uud.append(uuud)
             self.withanomalies.append(withanomaly)
             self.order_seq.append(orderseq)

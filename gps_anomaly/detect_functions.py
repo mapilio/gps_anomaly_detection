@@ -39,6 +39,7 @@ class Info:
         info['Information']['failed_images'] = info['Information']['failed_images'] + len(file_names)
         uud = [lis for lis in uud if lis != []]
         info['Information']['anomaly_sequences'] = uud
+
         return info
 
     def create_json(self, distrubution, info):
