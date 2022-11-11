@@ -14,4 +14,5 @@ class Anomaly:
         """
         result, failed_imgs, _ = mark_points(frames)
 
+
         return result, failed_imgs, _

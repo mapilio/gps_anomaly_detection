@@ -41,7 +41,9 @@ class Sequence:
     def __init__(self, descs):
         self.information = list(descs).pop()
         descs = list(descs)[:-1]
+
         self.descs = [desc for desc in descs if ("error" not in desc) and ("heading" in desc)]
+
         self.sequences = []
         self.distribution = []
         self.anomalies = []
@@ -112,6 +114,7 @@ class Sequence:
         return extracted, anomalies, uuud, withanomaly, seq
 
     def groupy_to_result(self):
+
         """
         - Group the sequences, remove that has one element sequences.
         - For each series, calculate distance of all points in the sequences.
@@ -119,20 +122,26 @@ class Sequence:
         :return:
         """
         self.descs = sorted(self.descs, key=key_func)
+        print("samobaba" ,self.descs)
         for _, val in groupby(self.descs, key_func):
             self.sequences.append(list(val))
+
         for sequen in self.sequences:
             latitude = []
             longitude = []
             heading = []
+
             for seq in sequen:
                 latitude.append(seq['latitude'])
                 longitude.append(seq['longitude'])
                 heading.append(seq['heading'])
+
             pair_lat, pair_lon, pair_head = pairwise(latitude), pairwise(longitude), pairwise(heading)
             zipped = list(zip(pair_lat, pair_lon))
+
             extracted, anomalies, uuud, withanomaly, orderseq = self.list_dist(zipped, sequen, pair_head)
             self.distribution.append(extracted)
+
             self.anomalies.append(anomalies)
 
             self.uud.append(uuud)

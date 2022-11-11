@@ -64,9 +64,12 @@ def mark_points(decs):
         - For each series, calculate distance of all points in the sequence.
         - using length anomaly/sequence ratio, get the final result sequences extracted anomalies
     """
+
     data_all = Sequence(decs)
+
     info = Info()
     extracted, information, anomaly, uud, with_anomaly, order_seq = data_all.groupy_to_result()
+
     filenames_list = info.create_list_filename(anomaly)
     information = info.update_info(information, filenames_list, uud)
     order_seq = info.create_json(order_seq, information)
