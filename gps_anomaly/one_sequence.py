@@ -122,7 +122,7 @@ class Sequence:
         :return:
         """
         self.descs = sorted(self.descs, key=key_func)
-        print("samobaba" ,self.descs)
+
         for _, val in groupby(self.descs, key_func):
             self.sequences.append(list(val))
 
