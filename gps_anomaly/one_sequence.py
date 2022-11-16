@@ -26,7 +26,7 @@ def pairwise(iterable):
 
 
 def key_func(k):
-    return k['SequenceUUID']
+    return k['sequenceUuid']
 
 
 class Sequence:
@@ -41,7 +41,7 @@ class Sequence:
     def __init__(self, descs):
         self.information = list(descs).pop()
         descs = list(descs)[:-1]
-        self.descs = [desc for desc in descs if ("error" not in desc) and ("Heading" in desc)]
+        self.descs = [desc for desc in descs if ("error" not in desc) and ("heading" in desc)]
         self.sequences = []
         self.distribution = []
         self.anomalies = []
@@ -53,7 +53,7 @@ class Sequence:
     def list_dist(self, zipped, seq, pair_head):
         """
         :param pair_head:
-        :param zipped: format (Latitude,Latitude,Longitude,Longitude)
+        :param zipped: format (latitude,latitude,longitude,longitude)
         :param seq: squence
         :return: data with anomalies removed
         """
@@ -69,8 +69,8 @@ class Sequence:
                 rang = ang.rang(pair_head[i])
                 if distance.distance_low_limit < distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and\
                         rang < ang.header_limit:
-                    dicton = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
-                    if AnomalyConfig.altitude_upper > dicton['Altitude']:
+                    dicton = (next(dic for dic in seq if (dic['latitude'] == zipped[i][0][1])))
+                    if AnomalyConfig.altitude_upper > dicton['altitude']:
                         extracted_seq.append(dicton)
                         seq[i] = ai.update_info(seq[i], detect=False)
                         if i == len(zipped):
@@ -83,7 +83,7 @@ class Sequence:
                             seq[i] = ai.update_info(seq[i], detect=True)
                             seq[i+1] = ai.update_info(seq[i+1], detect=True)
                 else:
-                    dicton2 = (next(dic for dic in seq if (dic['Latitude'] == zipped[i][0][1])))
+                    dicton2 = (next(dic for dic in seq if (dic['latitude'] == zipped[i][0][1])))
                     anomaly_points.append(dicton2)
                     seq[i] = ai.update_info(seq[i], detect=True)
                     if i == len(zipped):
@@ -97,7 +97,7 @@ class Sequence:
             extracted = []
             seq = ai.info_anomalies(seq, True)
             anomalies = seq
-            uuud = (anomalies[0]['SequenceUUID'])
+            uuud = (anomalies[0]['sequenceUuid'])
 
         else:
             extracted = extracted_seq
@@ -126,9 +126,9 @@ class Sequence:
             longitude = []
             heading = []
             for seq in sequen:
-                latitude.append(seq['Latitude'])
-                longitude.append(seq['Longitude'])
-                heading.append(seq['Heading'])
+                latitude.append(seq['latitude'])
+                longitude.append(seq['longitude'])
+                heading.append(seq['heading'])
             pair_lat, pair_lon, pair_head = pairwise(latitude), pairwise(longitude), pairwise(heading)
             zipped = list(zip(pair_lat, pair_lon))
             extracted, anomalies, uuud, withanomaly, orderseq = self.list_dist(zipped, sequen, pair_head)
