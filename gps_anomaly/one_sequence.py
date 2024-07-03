@@ -67,28 +67,37 @@ class Sequence:
         else:
             for i in range(len(zipped)):
                 rang = ang.rang(pair_head[i])
-                if distance.distance_low_limit < distance.gps_distance(zipped[i][0], zipped[i][1]) < distance.distance_limit and\
-                        rang < ang.header_limit:
-                    dicton = (next(dic for dic in seq if (dic['latitude'] == zipped[i][0][1])))
-                    if AnomalyConfig.altitude_upper > dicton['altitude']:
-                        extracted_seq.append(dicton)
-                        seq[i] = ai.update_info(seq[i], detect=False)
-                        if i == len(zipped):
-                            seq[i] = ai.update_info(seq[i], detect=False)
-                            seq[i+1] = ai.update_info(seq[i+1], detect=False)
-                    else:
-                        anomaly_points.append(dicton)
-                        seq[i] = ai.update_info(seq[i], detect=True)
-                        if i == len(zipped):
-                            seq[i] = ai.update_info(seq[i], detect=True)
-                            seq[i+1] = ai.update_info(seq[i+1], detect=True)
+                reasons = []
+                dis=distance.gps_distance(zipped[i][0],zipped[i][1])
+                # Check distance condition
+                if not (distance.distance_low_limit < dis < distance.distance_limit):
+                    reasons.append(f"Distance condition not met. The distance: {dis}")
+
+                # Check range condition
+                if rang >= ang.header_limit:
+                    reasons.append("Range condition not met")
+
+                dicton = next(dic for dic in seq if dic['latitude'] == zipped[i][0][1])
+
+                # Check altitude condition
+                if AnomalyConfig.altitude_upper <= dicton['altitude']:
+                    reasons.append("Altitude above upper limit")
+
+                # If any reason is present, handle as anomaly
+                if reasons:
+                    anomaly_points.append(dicton)
+                    reason_text = ", ".join(reasons)
+                    seq[i] = ai.update_info(seq[i], detect=True, reason=reason_text)
+                    if i == len(zipped) - 1:  # Adjusted to avoid index out of range error
+                        seq[i] = ai.update_info(seq[i], detect=True, reason=reason_text)
+                        seq[i + 1] = ai.update_info(seq[i + 1], detect=True, reason=reason_text)
                 else:
-                    dicton2 = (next(dic for dic in seq if (dic['latitude'] == zipped[i][0][1])))
-                    anomaly_points.append(dicton2)
-                    seq[i] = ai.update_info(seq[i], detect=True)
-                    if i == len(zipped):
-                        seq[i] = ai.update_info(seq[i], detect=True)
-                        seq[i + 1] = ai.update_info(seq[i + 1], detect=True)
+                    # If no anomaly, handle normally
+                    extracted_seq.append(dicton)
+                    seq[i] = ai.update_info(seq[i], detect=False)
+                    if i == len(zipped) - 1:  # Adjusted to avoid index out of range error
+                        seq[i] = ai.update_info(seq[i], detect=False)
+                        seq[i + 1] = ai.update_info(seq[i + 1], detect=False)
 
         # extracted_seq, anomaly_points = first_point(anomaly_points,extracted_seq,seq)
         ratio_seq = len(extracted_seq) / (len(extracted_seq) + len(anomaly_points))

@@ -13,9 +13,10 @@ class Anomaly_index:
                 res['anomaly'] = 0
         return extracted_or_anomalies
 
-    def update_info(self, mark, detect=bool):
+    def update_info(self, mark, detect=bool, reason=None):
         if detect is True:
             mark['anomaly'] = 1
+            mark['anomaly_reason'] = reason
         else:
             mark['anomaly'] = 0
         return mark
