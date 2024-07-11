@@ -11,8 +11,7 @@ def get_long_desc():
         return f.read()
 
 def get_requirements():
-    requirements_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "requirements.txt")
-    with open(requirements_path, encoding="utf-8") as f:
+    with open("requirements.txt", encoding = "utf-8") as f:
         return f.read().splitlines()
 
 
