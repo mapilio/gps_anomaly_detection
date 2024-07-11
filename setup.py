@@ -31,9 +31,4 @@ setuptools.setup(
     license='MIT License',
     python_requires='>=3.7',
     install_requires = get_requirements(),
-    entry_points = {
-        "console_scripts": [
-            "gps-anomaly-detector=gps-anomaly-detector:__init__"
-        ]
-    }
 )
