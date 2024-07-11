@@ -16,7 +16,7 @@ def get_requirements():
 
 def get_version():
     cwd = os.path.abspath(os.path.dirname(__file__))
-    current_version = os.path.join(cwd, "gps_anomaly_detection", "gps_anomaly", "version.py")
+    current_version = os.path.join(cwd, "gps_anomaly", "version.py")
     with io.open(current_version, encoding = "utf-8") as f:
         return re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]', f.read(), re.M).group(1)
 
