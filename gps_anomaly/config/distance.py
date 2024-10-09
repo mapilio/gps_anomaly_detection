@@ -9,7 +9,7 @@ class Distance:
     parameter will be marked as the anomaly point.
     """
     distance_limit = 50
-    distance_low_limit =2
+    distance_low_limit = 0.8
 
     def __init__(self):
         self.WGS84_a = 6378137.0
