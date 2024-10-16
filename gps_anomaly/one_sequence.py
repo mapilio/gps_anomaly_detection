@@ -8,7 +8,7 @@ import itertools
 DOWN_RATIO = 0.2
 SEQUENCE_LIMIT = 10
 ALTITUDE_LOWER = 0    ##removed this condition, can be added on line71
-ALTITUDE_UPPER = 1500
+ALTITUDE_UPPER = 3500 ## La paz/Bolivia
 
 
 class AnomalyConfig:
